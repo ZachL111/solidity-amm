@@ -1,43 +1,69 @@
 # solidity-amm
 
-solidity-amm is a Solidity project for blockchain tooling. It focuses on this technical goal: Model constant-product AMM swaps and invariant fixtures.
+`solidity-amm` packages a practical blockchain tooling exercise in Solidity. The emphasis is on deterministic behavior, a small public API, and examples that explain the tradeoffs.
 
-## Why it exists
+## How I Read Solidity Amm
 
-Small engineering tools are easiest to trust when their rules are explicit, testable, and cheap to run locally. This repository packages a focused model with fixture data and a local verification path so behavior can be reviewed without external services.
+The useful thing to inspect here is how the same score rule is represented in code, metadata, and examples. If those three pieces disagree, the audit script should make the drift visible.
 
-## Features
+## Problem Shape
 
-- Deterministic policy scoring over fixture scenarios.
-- Clear accept or review decisions based on a documented threshold.
-- A command-line or local test path for quick validation.
-- Golden fixture data for repeatable checks.
-- Minimal dependencies and a compact project layout.
+This project keeps the domain idea close to the tests. That makes it useful as a reference implementation, a small experiment, or a starting point for a more specialized tool.
 
-## Architecture Notes
+## Scenario Walkthrough
 
-The core module exposes a small scoring API. Inputs are simple numeric signals: demand, capacity, latency, risk, and weight. The score uses a threshold of 153, risk penalty 6, latency penalty 2, and weight bonus 4. Tests exercise the public API against the fixture cases in `fixtures/cases.csv`.
+The examples are meant to be readable before they are exhaustive. They cover enough variation to show how latency and risk can pull a decision below the threshold.
 
-## Setup
+## Internal Model
 
-Install the Solidity toolchain and run commands from the repository root.
+The core is a scoring model over demand, capacity, latency, risk, and weight. That keeps contract state, event replay, and invariant checks in one explicit decision path. The threshold is 153, with risk penalty 6, latency penalty 2, and weight bonus 4. The Solidity project uses Foundry tests and pure contract functions so invariants are cheap to exercise.
 
-## Usage
+## Main Behaviors
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1
-```
+- Models contract state with deterministic scoring and explicit review decisions.
+- Uses fixture data to keep event replay changes visible in code review.
+- Includes extended examples for invariant checks, including `recovery` and `degraded`.
+- Documents settlement rules tradeoffs in `docs/operations.md`.
+- Runs locally with a single verification command and no external credentials.
 
-The verification script builds or runs the project and checks the fixture decisions.
-
-## Tests
+## How To Run It
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1
 ```
 
-## Limitations And Roadmap
+This runs the language-level build or test path against the compact fixture set.
 
-- The fixture set is intentionally small so it can be audited by hand.
-- Future work could add richer domain-specific input adapters.
-- The model is a local demonstration and does not claim production use.
+## Validation
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/audit.ps1
+```
+
+The audit command checks repository structure and README constraints before it delegates to the verifier.
+
+## Repository Map
+
+- `src`: primary implementation
+- `test`: language test directory
+- `fixtures`: compact golden scenarios
+- `examples`: expanded scenario set
+- `metadata`: project constants and verification metadata
+- `docs`: operations and extension notes
+- `scripts`: local verification and audit commands
+- `foundry.toml`: Foundry project configuration
+
+## Follow-Up Work
+
+- Add a comparison mode that shows how decisions change when one signal is adjusted.
+- Add a loader for `examples/extended_cases.csv` and promote selected cases into the language test suite.
+- Add a short report command that prints the score breakdown for a single scenario.
+- Add one more blockchain tooling fixture that focuses on a malformed or borderline input.
+
+## Known Edges
+
+This code is local-first. It makes no claim about deployed usage and avoids credentials, hosted state, and environment-specific setup.
+
+## Run It Locally
+
+Install Solidity and run the commands from the repository root. The project does not need credentials or a hosted service.
