@@ -1,0 +1,73 @@
+{
+  "repo": "solidity-amm",
+  "language": "Solidity",
+  "category": "Blockchain tooling",
+  "goal": "Model constant-product AMM swaps and invariant fixtures.",
+  "review_model": {
+    "terms": [
+      "event finality",
+      "nonce pressure",
+      "settlement risk",
+      "proof depth"
+    ],
+    "lanes": [
+      "ship",
+      "watch",
+      "hold"
+    ],
+    "score": "signal * 2 + slack + confidence - drag * 3",
+    "purpose": "surface the domain-specific cases that need the most careful review"
+  },
+  "cases": [
+    {
+      "name": "baseline",
+      "focus": "event finality",
+      "signal": 52,
+      "slack": 25,
+      "drag": 32,
+      "confidence": 50,
+      "score": 83,
+      "lane": "hold"
+    },
+    {
+      "name": "stress",
+      "focus": "nonce pressure",
+      "signal": 70,
+      "slack": 22,
+      "drag": 18,
+      "confidence": 58,
+      "score": 166,
+      "lane": "ship"
+    },
+    {
+      "name": "edge",
+      "focus": "settlement risk",
+      "signal": 85,
+      "slack": 35,
+      "drag": 23,
+      "confidence": 85,
+      "score": 221,
+      "lane": "ship"
+    },
+    {
+      "name": "recovery",
+      "focus": "proof depth",
+      "signal": 79,
+      "slack": 29,
+      "drag": 32,
+      "confidence": 92,
+      "score": 183,
+      "lane": "ship"
+    },
+    {
+      "name": "stale",
+      "focus": "event finality",
+      "signal": 60,
+      "slack": 38,
+      "drag": 22,
+      "confidence": 94,
+      "score": 186,
+      "lane": "ship"
+    }
+  ]
+}
